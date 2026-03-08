@@ -15,13 +15,11 @@ const RUN_COMMAND_ACTION = `${TERMUX_PACKAGE}.RUN_COMMAND`;
 /**
  * Send a RUN_COMMAND intent to Termux.
  *
- * @param command  - The shell command to execute
- * @param args     - Optional array of arguments
+ * @param command    - The shell command to execute
  * @param background - Run in background (default true)
  */
 export async function runTermuxCommand(
   command: string,
-  args: string[] = [],
   background = true,
 ): Promise<void> {
   const extras: Record<string, unknown> = {

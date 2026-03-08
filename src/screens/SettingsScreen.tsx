@@ -101,7 +101,7 @@ export default function SettingsScreen({ navigation }: Props) {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>OpenAI API Key</Text>
         <Text style={styles.currentValue}>
-          Current: {apiKey ? `${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}` : 'Not set'}
+          Current: {apiKey ? `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 3)}` : 'Not set'}
         </Text>
         <TextInput
           style={styles.input}

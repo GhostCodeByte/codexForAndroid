@@ -23,11 +23,10 @@ type Props = {
   navigation: { navigate: (screen: string) => void };
 };
 
-let codexWs: CodexWebSocket | null = null;
-
 export default function ChatScreen({ navigation }: Props) {
   const [input, setInput] = useState('');
   const scrollRef = useRef<ScrollView>(null);
+  const codexWsRef = useRef<CodexWebSocket | null>(null);
 
   const {
     threadId,
@@ -106,9 +105,9 @@ export default function ChatScreen({ navigation }: Props) {
 
   const connect = useCallback(async () => {
     try {
-      codexWs = new CodexWebSocket(handleCodexMessage, setConnectionStatus);
-      await codexWs.connect();
-      const newThreadId = await codexWs.createThread();
+      codexWsRef.current = new CodexWebSocket(handleCodexMessage, setConnectionStatus);
+      await codexWsRef.current.connect();
+      const newThreadId = await codexWsRef.current.createThread();
       setThreadId(newThreadId);
     } catch {
       setConnectionStatus('error');
@@ -117,7 +116,7 @@ export default function ChatScreen({ navigation }: Props) {
 
   const sendMessage = useCallback(async () => {
     const text = input.trim();
-    if (!text || !codexWs || !threadId) return;
+    if (!text || !codexWsRef.current || !threadId) return;
 
     setInput('');
     addMessage({
@@ -138,7 +137,7 @@ export default function ChatScreen({ navigation }: Props) {
     setStreaming(true);
 
     try {
-      await codexWs.startTurn(threadId, text);
+      await codexWsRef.current.startTurn(threadId, text);
     } catch {
       setStreaming(false);
     }
@@ -146,22 +145,22 @@ export default function ChatScreen({ navigation }: Props) {
 
   const handleApproval = useCallback(
     async (messageId: string, type: 'command' | 'fileChange', approved: boolean) => {
-      if (!codexWs) return;
+      if (!codexWsRef.current) return;
       updateApproval(messageId, approved ? 'approved' : 'declined');
 
       if (type === 'command') {
-        await codexWs.provideCommandApproval(messageId, approved);
+        await codexWsRef.current.provideCommandApproval(messageId, approved);
       } else {
-        await codexWs.provideFileChangeApproval(messageId, approved);
+        await codexWsRef.current.provideFileChangeApproval(messageId, approved);
       }
     },
     [updateApproval],
   );
 
   const interruptTurn = useCallback(async () => {
-    if (!codexWs || !threadId) return;
+    if (!codexWsRef.current || !threadId) return;
     try {
-      await codexWs.interruptTurn(threadId);
+      await codexWsRef.current.interruptTurn(threadId);
       setStreaming(false);
     } catch {
       // ignore

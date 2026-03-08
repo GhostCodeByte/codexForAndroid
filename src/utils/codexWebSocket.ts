@@ -80,7 +80,8 @@ export class CodexWebSocket {
           const message: CodexMessage = JSON.parse(String(event.data));
           this.handleMessage(message);
         } catch {
-          // Ignore malformed messages
+          // Malformed JSON from server — skip silently as this is non-fatal
+          // and can occur during connection negotiation
         }
       };
 
