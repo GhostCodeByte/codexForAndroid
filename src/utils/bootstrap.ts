@@ -84,7 +84,6 @@ exec codex app-server --listen ws://127.0.0.1:4500
  * @param apiKey - The OpenAI API key to embed in the launcher
  */
 export function generateBootstrapScript(apiKey: string): string {
-  const shimSource = PRCTL_SHIM_SOURCE.replace(/"/g, '\\"').replace(/\n/g, '\\n');
   const launcherContent = generateLauncherScript(apiKey);
 
   return `#!/bin/bash
