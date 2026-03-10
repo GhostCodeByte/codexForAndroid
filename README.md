@@ -52,6 +52,53 @@ Termux (background)
 - expo-secure-store for API key storage
 - WebSocket for Codex JSON-RPC protocol
 
+## Build APK (GitHub Actions)
+
+The easiest way to get an installable APK is via the included GitHub Actions workflow — no local Android SDK required.
+
+### Steps
+
+1. **Push this repository to GitHub** (or fork it) and go to the **Actions** tab.
+2. Select **Build APK** in the left sidebar.
+3. Click **Run workflow**, choose `debug` (recommended) or `release`, and click the green **Run workflow** button.
+4. Wait ~10–15 minutes for the build to finish.
+5. Open the completed run and download the APK from the **Artifacts** section.
+
+> **Debug vs Release**
+> - `debug` — no signing required; install directly on any Android device with *Unknown sources* enabled.
+> - `release` — requires three repository secrets (see below).
+
+### Release signing secrets (optional)
+
+If you want a signed release APK, add these [repository secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) under **Settings → Secrets → Actions**:
+
+| Secret name | Description |
+|-------------|-------------|
+| `KEYSTORE_BASE64` | Your `.keystore` file encoded as Base64 (`base64 -w0 my.keystore`) |
+| `STORE_PASSWORD` | Keystore password |
+| `KEY_ALIAS` | Key alias inside the keystore |
+| `KEY_PASSWORD` | Key password |
+
+To generate a new keystore locally:
+
+```bash
+keytool -genkeypair -v \
+  -keystore codex-release.keystore \
+  -alias codex \
+  -keyalg RSA -keysize 2048 \
+  -validity 10000
+```
+
+Then encode it for the secret:
+
+```bash
+# Linux (GNU coreutils)
+base64 -w0 codex-release.keystore
+
+# macOS
+base64 -i codex-release.keystore
+```
+
 ## Development
 
 ```bash
